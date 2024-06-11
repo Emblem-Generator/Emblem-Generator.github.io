@@ -1,295 +1,81 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Emblem Helper</title>
-	<link rel="stylesheet" href="style.css">
-	<script src="main.js"></script>
-	<script src="helper.js"></script>
-	<script src="svgObject.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Emblem Helper</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
-	<div class="container">
-		<div class="row">
-			<div class="column left">
-				<div class="column-content">
-					<button id="eh-btnImportImage" type="button" >Import Image</button>
-					<input type="file" id="eh-fileSelector" style="display: none;">
-					<div>
-						<fieldset style="border-color: #242424;">
-							<div class="div-image-container">
-								<img id="eh-imgSource"/>
-							</div>
-							<div class="div-status">
-								<span class="status-text" id="eh-lblStatus">NO IMAGE</span>
-							</div>
-						</fieldset>
-					</div>
-					<div>
-						<fieldset>
-							<legend>Source Image Resize</legend>
-							<div>
-								<label for="eh-opt64" class="l-radio">
-									<input type="radio" id="eh-opt64" value="64" name="eh-optSourceSize" tabindex="1">
-									<span>64</span>
-								</label>
-								<label for="eh-opt128" class="l-radio">
-									<input type="radio" id="eh-opt128" value="128" name="eh-optSourceSize" tabindex="2" checked="checked">
-									<span>128</span>
-								</label>
-								<label for="eh-opt256" class="l-radio">
-									<input type="radio" id="eh-opt256" value="256" name="eh-optSourceSize" tabindex="3">
-									<span>256</span>
-								</label>
-								<label for="eh-opt512" class="l-radio">
-									<input type="radio" id="eh-opt512" value="512" name="eh-optSourceSize" tabindex="4">
-									<span>512</span>
-								</label>
-							</div>
-						</fieldset>
-						<fieldset>
-							<legend>Resize Smoothing</legend>
-							<div>
-								<label for="eh-optOn" class="l-radio">
-									<input type="radio" id="eh-optOn" value="low" name="eh-optSmoothing" tabindex="1" checked="checked">
-									<span>On</span>
-								</label>
-								<label for="eh-optOff" class="l-radio">
-									<input type="radio" id="eh-optOff" value="full" name="eh-optSmoothing" tabindex="2">
-									<span>Off</span>
-								</label>
-							</div>
-						</fieldset>
-						<fieldset>
-							<legend>Colour Mode</legend>
-							<div>
-								<label for="eh-optLow" class="l-radio">
-									<input type="radio" id="eh-optLow" value="low" name="eh-optColour" tabindex="1">
-									<span>Low</span>
-								</label>
-								<label for="eh-optFull" class="l-radio">
-									<input type="radio" id="eh-optFull" value="full" name="eh-optColour" tabindex="2" checked="checked">
-									<span>Full</span>
-								</label>
-							</div>
-						</fieldset>
-						<fieldset>
-							<legend>SVG Creation Method</legend>
-							<div>
-								<label for="eh-optAuto" class="l-radio">
-									<input type="radio" id="eh-optAuto" name="eh-optOrientation" tabindex="1" checked="checked">
-									<span>Auto</span>
-								</label>
-								<label for="eh-optRows" class="l-radio">
-									<input type="radio" id="eh-optRows" name="eh-optOrientation" tabindex="2">
-									<span>Rows</span>
-								</label>
-								<label for="eh-optColumns" class="l-radio">
-									<input type="radio" id="eh-optColumns" name="eh-optOrientation" tabindex="3">
-									<span>Columns</span>
-								</label>
-							</div>
-						</fieldset>
-						<fieldset>
-							<legend>Decimal Precision</legend>
-							<div>
-								<label for="eh-opt3" class="l-radio">
-									<input type="radio" id="eh-opt3" value="3" name="eh-optAccuracy" tabindex="3" checked="checked">
-									<span>Low</span>
-								</label>
-								<label for="eh-opt4" class="l-radio">
-									<input type="radio" id="eh-opt4" value="4" name="eh-optAccuracy" tabindex="4">
-									<span>Medium</span>
-								</label>
-								<label for="eh-opt5" class="l-radio">
-									<input type="radio" id="eh-opt5" value="5" name="eh-optAccuracy" tabindex="5">
-									<span>High</span>
-								</label>
-							</div>
-						</fieldset>
-						<button disabled id="eh-btnProcessImage" type="button" class="clr-inactive btn-wide">Create Emblem</button>
-					</div>
-					
-				</div>
-			</div>
-			<div class="column middle">
-				<div class="column-content">
-					<div class="div-svg-container">
-						<div class="div-svg-image">
-							<svg width="512" height="512">
-								<defs>
-									<pattern id="checkerDark" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
-										<rect x="0" y="0" width="8" height="8" fill="#46494E"></rect>
-										<rect x="0" y="8" width="8" height="8" fill="#777672"></rect>
-										<rect x="8" y="0" width="8" height="8" fill="#777672"></rect>
-										<rect x="8" y="8" width="8" height="8" fill="#46494E"></rect>
-									</pattern>
-								</defs>
-								<rect x="0" y="0" width="100%" height="100%" fill="url(#checkerDark)"></rect>
-							</svg>
-						</div>
-						<div class="div-svg-image" id="eh-svgPreview"></div>
-					</div>
-					<div id="eh-divInfo" class="div-info clr-inactive">⠀</div>
-				</div>
-			</div>
-			<div class="column right">
-				<div class="column-content">
-					<button disabled id="eh-btnCreateCode" type="button" class="clr-inactive btn-wide">Generate Code</button>
-					<textarea id="eh-txtConsoleCode" class="textarea"></textarea>
-					<div class="div-info div-mobile">
-						<strong>Note for mobile users:</strong><br>
-						Some mobile devices will not be able to copy all of the code. You may need to copy it in sections.
-					</div>
-					<button disabled id="eh-btnCopyCode" type="button" class="clr-inactive btn-wide">Copy Code</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<script>
-		const STATUS = document.getElementById('eh-lblStatus');
-		const OUTPUT = document.getElementById('eh-imgSource');
-		if (window.FileList && window.File && window.FileReader)
-		{
-			document.getElementById('eh-fileSelector').addEventListener('change', event => {
-				OUTPUT.src = '';
-				STATUS.textContent = 'NO IMAGE';
-				setClass('eh-btnProcessImage', 'btn-wide clr-inactive');
-				disableElement('eh-btnProcessImage');
-				const FILE = event.target.files[0];
-
-				if (!FILE.type)
-				{
-					STATUS.textContent = 'Error: The File.type property does not appear to be supported on this browser.';
-					return;
-				}
-
-				if (!FILE.type.match('image.*'))
-				{
-					STATUS.textContent = 'Error: Image format not recognized!'
-					return;
-				}
-
-				const READER = new FileReader();
-				READER.addEventListener('load', event => {
-					OUTPUT.src = event.target.result;
-					var _path = document.getElementById('eh-fileSelector').value;
-					var _fName = _path.split("\\").pop();
-					STATUS.textContent = fileTrunc(_fName);
-					setClass('eh-btnProcessImage', 'btn-wide clr-primary');
-					enableElement('eh-btnProcessImage');
-				});
-
-				OUTPUT.addEventListener('load', event => {
-					var _w = OUTPUT.naturalWidth;
-					var _h = OUTPUT.naturalHeight;
-
-					if (_w >= 512 || _h >= 512)
-					{
-						document.getElementById('eh-opt512').checked = true;
-					}
-					else if (_w >= 256 || _h >= 256)
-					{
-						document.getElementById('eh-opt256').checked = true;
-					}
-					else if (_w >= 128 || _h >= 128)
-					{
-						document.getElementById('eh-opt128').checked = true;
-					}
-					else
-					{
-						document.getElementById('eh-opt64').checked = true;
-					}
-				});
-				READER.readAsDataURL(FILE);
-			}); 
-		}
-
-		document.getElementById('eh-btnImportImage').onclick = function() {
-			document.getElementById('eh-fileSelector').click();
-		};
-
-		document.getElementById('eh-btnProcessImage').onclick = function()
-		{
-			setClass('eh-btnCreateCode', 'btn-wide clr-inactive');
-			disableElement('eh-btnCreateCode');
-
-			setClass('eh-btnCopyCode', 'btn-wide clr-inactive');
-			disableElement('eh-btnCopyCode');
-
-			document.getElementById('eh-txtConsoleCode').value = '';
-
-			EH = new emblemHelper();
-
-			var _resize = 64, _optionResize = document.getElementsByName('eh-optSourceSize');
-			for (i = 0; i < _optionResize.length; i++)
-				if(_optionResize[i].checked)
-					_resize = Number(_optionResize[i].value);
-			
-			var _precision = 3, _optionAccuracy = document.getElementsByName('eh-optAccuracy');
-			for (i = 0; i < _optionAccuracy.length; i++)
-				if(_optionAccuracy[i].checked)
-					_precision = Number(_optionAccuracy[i].value);
-			
-			EH.setAccuracy(_precision);
-
-			document.getElementById('eh-optOn').checked ? (EH.useSmoothing(true)) : (EH.useSmoothing(false));
-
-			document.getElementById('eh-optLow').checked ? (EH.useLowColour(true)) : (EH.useLowColour(false));
-
-			var _sourceImage = document.getElementById('eh-imgSource').src;
-			
-			if (document.getElementById('eh-optRows').checked)
-			{
-				EH.createEmblem(_sourceImage, true, _resize);
-			}
-			else if (document.getElementById('eh-optColumns').checked)
-			{
-				EH.createEmblem(_sourceImage, false, _resize);
-			}
-			else if (document.getElementById('eh-optAuto').checked)
-			{
-				EH.createEmblem(_sourceImage, false, _resize);
-				var _lengthColumns = EH.encodedLength;
-				EH.createEmblem(_sourceImage, true, _resize);
-				var _lengthRows = EH.encodedLength;
-				if (_lengthColumns < _lengthRows)
-					EH.createEmblem(_sourceImage, false, _resize);
-			}
-
-			document.getElementById('eh-svgPreview').innerHTML = '';
-			document.getElementById('eh-svgPreview').appendChild(EH.svg.getSVG());
-
-			if (EH.encodedLength < EH.maxEncodedLength)
-			{
-				setClass('eh-divInfo', 'div-info clr-success');
-				document.getElementById('eh-divInfo').innerHTML = 'OK:&nbsp;&nbsp;&nbsp; ' + numberWithCommas(EH.encodedLength) + '&nbsp;&nbsp;/&nbsp;&nbsp;' + numberWithCommas(EH.maxEncodedLength);
-				setClass('eh-btnCreateCode', 'btn-wide clr-primary');
-				enableElement('eh-btnCreateCode');
-			}
-			else
-			{
-				setClass('eh-divInfo', 'div-info clr-danger');
-				document.getElementById('eh-divInfo').innerHTML = 'Too Expensive:&nbsp;&nbsp;&nbsp; ' + numberWithCommas(EH.encodedLength) + '&nbsp;&nbsp;/&nbsp;&nbsp;' + numberWithCommas(EH.maxEncodedLength);
-			}
-			
-		};
-
-		document.getElementById('eh-btnCreateCode').onclick = function()
-		{
-			document.getElementById('eh-txtConsoleCode').value = EH.getConsoleCode();
-			setClass('eh-btnCopyCode', 'btn-wide clr-primary');
-			enableElement('eh-btnCopyCode');
-		};
-
-		document.getElementById('eh-btnCopyCode').onclick = function()
-		{
-			copyToClipboard('eh-txtConsoleCode');
-			document.getElementById('eh-btnCopyCode').innerText = 'Copied';
-			setClass('eh-btnCopyCode', 'btn-wide clr-success');
-			setTimeout(function () { document.getElementById('eh-btnCopyCode').innerText = 'Copy Code', setClass('eh-btnCopyCode', 'btn-wide clr-primary') }, 2000);
-		};
-	</script>
+    <div class="container">
+        <div class="row">
+            <div class="column left">
+                <div class="column-content">
+                    <button id="eh-btnImportImage" type="button">Import Image</button>
+                    <input type="file" id="eh-fileSelector" style="display: none;">
+                    <fieldset style="border-color: #242424;">
+                        <div class="image-container">
+                            <img id="eh-imgSource" alt="Source Image" />
+                        </div>
+                        <div class="status">
+                            <span class="status-text" id="eh-lblStatus">NO IMAGE</span>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Source Image Resize</legend>
+                        <div>
+                            <label for="eh-opt64" class="radio-label">
+                                <input type="radio" id="eh-opt64" value="64" name="eh-optSourceSize" tabindex="1">
+                                <span>64</span>
+                            </label>
+                            <label for="eh-opt128" class="radio-label">
+                                <input type="radio" id="eh-opt128" value="128" name="eh-optSourceSize" tabindex="2" checked>
+                                <span>128</span>
+                            </label>
+                            <label for="eh-opt256" class="radio-label">
+                                <input type="radio" id="eh-opt256" value="256" name="eh-optSourceSize" tabindex="3">
+                                <span>256</span>
+                            </label>
+                            <label for="eh-opt512" class="radio-label">
+                                <input type="radio" id="eh-opt512" value="512" name="eh-optSourceSize" tabindex="4">
+                                <span>512</span>
+                            </label>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Resize Mode</legend>
+                        <div>
+                            <label for="eh-optColumns" class="radio-label">
+                                <input type="radio" id="eh-optColumns" value="columns" name="eh-optResizeMode" tabindex="5" checked>
+                                <span>Columns</span>
+                            </label>
+                            <label for="eh-optRows" class="radio-label">
+                                <input type="radio" id="eh-optRows" value="rows" name="eh-optResizeMode" tabindex="6">
+                                <span>Rows</span>
+                            </label>
+                            <label for="eh-optAuto" class="radio-label">
+                                <input type="radio" id="eh-optAuto" value="auto" name="eh-optResizeMode" tabindex="7">
+                                <span>Auto</span>
+                            </label>
+                        </div>
+                    </fieldset>
+                    <div class="info" id="eh-divInfo"></div>
+                </div>
+            </div>
+            <div class="column right">
+                <div class="column-content">
+                    <button id="eh-btnCreateEmblem" class="button-wide primary">Create Emblem</button>
+                    <button id="eh-btnCreateCode" class="button-wide primary" disabled>Create Code</button>
+                    <button id="eh-btnCopyCode" class="button-wide primary" disabled>Copy Code</button>
+                    <textarea id="eh-txtConsoleCode" class="textarea-wide" readonly></textarea>
+                </div>
+                <div id="eh-svgPreview" class="svg-preview"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // JavaScript code here
+    </script>
 </body>
 </html>
