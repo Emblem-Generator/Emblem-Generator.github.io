@@ -1,3 +1,179 @@
+// helper.js
+function fileTrunc(fileName) {
+  if (fileName.length > 20)
+    return fileName.substr(0, 10) + '[..]' + fileName.substr(-10);
+  return fileName;
+}
+
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function floatRound(value, decimals = 5) {
+  var _n = parseFloat(value).toFixed(decimals);
+  return Number(_n);
+}
+
+function componentToHex(c) {
+  var _hex = c.toString(16);
+  return _hex.length == 1 ? '0' + _hex : _hex;
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function base_convert(number, frombase, tobase) {
+  return parseInt(number + '', frombase | 0).toString(tobase | 0);
+}
+
+function hexToShort(hex) {
+  if (hex[0] == '#')
+    hex = hex.substr(1, 6);
+
+  if (hex.length == 3)
+    return hex;
+
+  if (hex.length != 6)
+    return '#FFF';
+
+  var _final = '';
+
+  var _segments = [];
+  _segments[0] = hex.substr(0, 2);
+  _segments[1] = hex.substr(2, 2);
+  _segments[2] = hex.substr(4, 2);
+
+  for (const s of _segments) {
+    _dec = base_convert(s, 16, 10);
+    _remainder = _dec % 17;
+    _newa = (_dec % 17 > 7) ? 17 + (_dec - _remainder) : _dec - _remainder;
+    hex = base_convert(_newa, 10, 16);
+    _final += hex[0];
+  }
+  return '#' + _final;
+}
+
+function arraysEqual(a, b) {
+  return JSON.stringify(a) == JSON.stringify(b);
+}
+
+function copyToClipboard(textArea, alert = false) {
+  var _copyText = document.getElementById(textArea);
+  var _textLength = _copyText.value.length;
+  _copyText.select();
+  _copyText.setSelectionRange(0, _textLength);
+  navigator.clipboard.writeText(_copyText.value);
+  if (alert)
+    alert('Copied!');
+}
+
+function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
+  var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+  return {
+    width: srcWidth * ratio,
+    height: srcHeight * ratio,
+    offsetX: (maxWidth - srcWidth * ratio) / 2,
+    offsetY: (maxHeight - srcHeight * ratio) / 2
+  };
+}
+
+function setClass(element, cssClass) {
+  document.getElementById(element).className = cssClass;
+}
+
+function enableElement(element) {
+  document.getElementById(element).disabled = false;
+}
+
+function disableElement(element) {
+  document.getElementById(element).disabled = true;
+}
+
+// svgObject.js
+class svgObject {
+  constructor(shapePath, canvasWidth = 512, canvasHeight = 512) {
+    this.xmlns = 'http://www.w3.org/2000/svg';
+    this.canvasWidth = canvasWidth;
+    this.canvasHeight = canvasHeight;
+    this.svgElement = document.createElementNS(this.xmlns, 'svg');
+    this.svgElement.setAttribute('xmlns', this.xmlns);
+    this.svgElement.setAttribute('width', canvasHeight);
+    this.svgElement.setAttribute('height', canvasHeight);
+    this.svgElement.setAttribute('version', '1.1');
+    this.svgDefs = document.createElementNS(this.xmlns, 'defs');
+    this.paths = [];
+    this.shapePath = shapePath;
+  }
+
+  addBackground() {
+    var _rect = document.createElementNS(this.xmlns, 'rect');
+    _rect.setAttribute('x', 0);
+    _rect.setAttribute('y', 0);
+    _rect.setAttribute('width', this.canvasWidth);
+    _rect.setAttribute('height', this.canvasHeight);
+    _rect.setAttribute('rx', 0);
+    _rect.setAttribute('ry', 0);
+    _rect.setAttribute('fill', 'none');
+    _rect.setAttribute('stroke', '#a1a1a1');
+    _rect.setAttribute('fill-opacity', 1);
+    _rect.setAttribute('stroke-opacity', 0);
+    _rect.setAttribute('stroke-width', 0);
+    _rect.setAttribute('stroke-miterlimit', 10);
+    this.svgElement.appendChild(_rect);
+  }
+
+  addSolidPath(x, y, scaleX, scaleY, fill, opacity) {
+    var _path = document.createElementNS(this.xmlns, 'path');
+    _path.setAttribute('fill', fill);
+    var _alpha = floatRound((1 / 255) * opacity, 3);
+    if (_alpha < 1)
+      _path.setAttribute('fill-opacity', _alpha);
+    _path.setAttribute('d', this.shapePath);
+    _path.setAttribute('transform', `matrix(${scaleX},0,0,${scaleY},${x},${y})`);
+    this.paths.push(_path);
+  }
+
+  addGradientPath(x, y, scaleX, scaleY, fill) {
+    var _path = document.createElementNS(this.xmlns, 'path');
+    _path.setAttribute('fill', fill);
+    _path.setAttribute('d', this.shapePath);
+    _path.setAttribute('transform', `matrix(${scaleX},0,0,${scaleY},${x},${y})`);
+    this.paths.push(_path);
+  }
+
+  addGradient(id, stops, isRows) {
+    var _gradient = document.createElementNS(this.xmlns, 'linearGradient');
+    _gradient.setAttribute('id', id);
+    if (!isRows) {
+      _gradient.setAttribute('x2', 0);
+      _gradient.setAttribute('y2', 1);
+    }
+    for (const _stop of stops) {
+      var _s = document.createElementNS(this.xmlns, 'stop');
+      _s.setAttribute('offset', _stop[0]);
+      _s.setAttribute('stop-color', _stop[1]);
+      var _alpha = floatRound((1 / 255) * _stop[2], 3);
+      if (_alpha < 1)
+        _s.setAttribute('stop-opacity', _alpha);
+      _gradient.appendChild(_s);
+    }
+    this.svgDefs.appendChild(_gradient);
+  }
+
+  finalise() {
+    this.svgElement.appendChild(this.svgDefs);
+    this.addBackground();
+    for (const _path of this.paths) {
+      this.svgElement.appendChild(_path);
+    }
+  }
+
+  getSVG() {
+    return this.svgElement;
+  }
+}
+// main.js
 class emblemSlice {
   constructor(id, isVisible, stops, span = 1, isSpanned = false, spannedBy = null) {
     this.id = id;
